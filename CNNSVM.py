@@ -3,16 +3,16 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report, confusion_matrix, roc_curve, auc
+from sklearn.metrics import classification_report, confusion_matrix
 from sklearn.utils import resample
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
 from sklearn.pipeline import make_pipeline
-from sklearn.decomposition import PCA
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv1D, MaxPooling1D, Flatten, Dense
-
+from tensorflow.keras.callbacks import EarlyStopping
+from sklearn.metrics import classification_report, confusion_matrix, roc_curve, auc
 # 加载数据
 data = pd.read_csv('company_data_v2.csv')
 
@@ -29,29 +29,7 @@ data_balanced = pd.concat([data_majority, data_minority_upsampled])
 X = data_balanced.drop('Financialfraud', axis=1)
 y = data_balanced['Financialfraud']
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
-# 原始样本 Financialfraud == 0 和 Financialfraud == 1 的数量
-count_class_0_original = len(data_cleaned[data_cleaned['Financialfraud'] == 0])
-count_class_1_original = len(data_cleaned[data_cleaned['Financialfraud'] == 1])
 
-# 过采样处理后的样本 Financialfraud == 0 和 Financialfraud == 1 的数量
-count_class_0_upsampled = len(data_balanced[data_balanced['Financialfraud'] == 0])
-count_class_1_upsampled = len(data_balanced[data_balanced['Financialfraud'] == 1])
-
-# 计算比例
-ratio_class_0_original = count_class_0_original / len(data_cleaned)
-ratio_class_1_original = count_class_1_original / len(data_cleaned)
-ratio_class_0_upsampled = count_class_0_upsampled / len(data_balanced)
-ratio_class_1_upsampled = count_class_1_upsampled / len(data_balanced)
-
-# 打印结果
-print("原始样本中 Financialfraud == 0 的数量:", count_class_0_original)
-print("原始样本中 Financialfraud == 1 的数量:", count_class_1_original)
-print("原始样本中 Financialfraud == 0 的比例:", ratio_class_0_original)
-print("原始样本中 Financialfraud == 1 的比例:", ratio_class_1_original)
-print("过采样处理后的样本中 Financialfraud == 0 的数量:", count_class_0_upsampled)
-print("过采样处理后的样本中 Financialfraud == 1 的数量:", count_class_1_upsampled)
-print("过采样处理后的样本中 Financialfraud == 0 的比例:", ratio_class_0_upsampled)
-print("过采样处理后的样本中 Financialfraud == 1 的比例:", ratio_class_1_upsampled)
 # 数据标准化
 scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(X_train)
@@ -74,14 +52,17 @@ model.compile(optimizer='adam',
               loss='binary_crossentropy',
               metrics=['accuracy'])
 
-model.fit(X_train_reshaped, y_train, epochs=10, batch_size=64, validation_split=0.2)
-# 记录训练过程中的损失函数变化
-history = model.fit(X_train_reshaped, y_train, epochs=10, batch_size=64, validation_split=0.2)
+# 添加早停法
+early_stopping = EarlyStopping(monitor='val_loss', patience=3, restore_best_weights=True)
+
+# 训练模型
+history = model.fit(X_train_reshaped, y_train, epochs=20, batch_size=64, validation_split=0.2, callbacks=[early_stopping])
 
 # 绘制损失函数变化曲线
+plt.figure(figsize=(10, 5))
 plt.plot(history.history['loss'], label='Train Loss')
 plt.plot(history.history['val_loss'], label='Validation Loss')
-plt.title('Model Loss - CNN-SVM')
+plt.title('Model Loss')
 plt.xlabel('Epoch')
 plt.ylabel('Loss')
 plt.legend()

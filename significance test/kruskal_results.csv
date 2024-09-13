@@ -1,0 +1,5 @@
+Metric,Kruskal-Wallis H Statistic,Kruskal-Wallis H p-value
+Precision,4487.223821592706,0.0
+Recall,4036.166978217274,0.0
+F1-Score,4115.694605354518,0.0
+Accuracy,4503.647293598698,0.0

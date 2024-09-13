@@ -1,0 +1,29 @@
+Metric,Test,Statistic,p-value
+Precision,ANOVA,22224.84319,0
+,CNN-SVM Normality,-,0
+,LR Normality,-,0
+,XGBoost Normality,-,0.173655
+,RF Normality,-,0
+,SVM Normality,-,0.103567
+,Levene's Test,748.2667294,0
+Recall,ANOVA,164020.5328,0
+,CNN-SVM Normality,-,0.000001
+,LR Normality,-,0
+,XGBoost Normality,-,0.841317
+,RF Normality,-,0.000004
+,SVM Normality,-,0.018968
+,Levene's Test,243.5320157,0
+F1-Score,ANOVA,90937.74013,0
+,CNN-SVM Normality,-,0.000001
+,LR Normality,-,0
+,XGBoost Normality,-,0.330066
+,RF Normality,-,0.000006
+,SVM Normality,-,0
+,Levene's Test,167.9970309,0
+Accuracy,ANOVA,305072.888,0
+,CNN-SVM Normality,-,0.000001
+,LR Normality,-,0
+,XGBoost Normality,-,0.002848
+,RF Normality,-,0
+,SVM Normality,-,0.018968
+,Levene's Test,613.0854751,0
